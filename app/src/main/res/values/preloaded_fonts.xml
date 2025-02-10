@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/averia_serif_libre_light</item>
+        <item>@font/calistoga</item>
+        <item>@font/caprasimo</item>
+        <item>@font/poller_one</item>
+        <item>@font/suez_one</item>
+    </array>
+</resources>
