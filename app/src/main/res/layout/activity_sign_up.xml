@@ -48,6 +48,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:id="@+id/name"
+                    android:background="@drawable/edit_text_back"
                     android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -64,6 +65,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:id="@+id/email"
+                    android:background="@drawable/edit_text_back"
                     android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -79,6 +81,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:id="@+id/number"
+                    android:background="@drawable/edit_text_back"
                     android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -93,6 +96,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:id="@+id/password"
+                    android:background="@drawable/edit_text_back"
                     android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -107,6 +111,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:id="@+id/ronnno"
+                    android:background="@drawable/edit_text_back"
                     android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -125,6 +130,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingStart="7dp"
+                    android:background="@drawable/edit_text_back"
                     app:layout_constraintTop_toTopOf="parent" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -144,6 +150,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingStart="7dp"
+                    android:background="@drawable/edit_text_back"
                     app:layout_constraintTop_toTopOf="parent" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -164,6 +171,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingStart="7dp"
+                    android:background="@drawable/edit_text_back"
                     app:layout_constraintTop_toTopOf="parent" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -184,6 +192,7 @@
                     android:id="@+id/batch"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@drawable/edit_text_back"
                     android:paddingStart="7dp"
                     app:layout_constraintTop_toTopOf="parent" />
 

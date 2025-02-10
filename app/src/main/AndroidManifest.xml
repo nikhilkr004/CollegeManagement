@@ -16,6 +16,9 @@
         android:theme="@style/Theme.BSAITM"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.ProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.StudentActivitysClass"
             android:exported="false" />
         <activity
@@ -23,9 +26,7 @@
             android:exported="false" />
         <activity
             android:name=".Activity.SignUpActivity"
-            android:exported="false">
-
-        </activity>
+            android:exported="false"></activity>
         <activity
             android:name=".Activity.SplashScreenActivity"
             android:exported="true">
@@ -37,8 +38,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false"></activity>
 
         <meta-data
             android:name="preloaded_fonts"

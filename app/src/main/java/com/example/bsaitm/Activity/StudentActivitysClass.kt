@@ -39,8 +39,6 @@ class StudentActivitysClass : AppCompatActivity() {
     }
 
 
-
-
     private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,22 +50,30 @@ class StudentActivitysClass : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        db=FirebaseFirestore.getInstance()
+        db = FirebaseFirestore.getInstance()
 
-        val branch=intent.getStringExtra("branch")
-        val rollNo=intent.getStringExtra("rollNo")
-        val semester=intent.getStringExtra("sem")
-        val course=intent.getStringExtra("course")
-        val batch=intent.getStringExtra("batch")
+        val branch = intent.getStringExtra("branch")
+        val rollNo = intent.getStringExtra("rollNo")
+        val semester = intent.getStringExtra("sem")
+        val course = intent.getStringExtra("course")
+        val batch = intent.getStringExtra("batch")
 
-        markAttendanceOnCalendar(binding.calendarView, rollNo,branch,semester,batch,course)
+        markAttendanceOnCalendar(binding.calendarView, rollNo, branch, semester, batch, course)
 
-        fetchAttendanceForChart(binding.lineChart,rollNo,branch,semester,batch,course)
+//        fetchAttendanceForChart(binding.lineChart,rollNo,branch,semester,batch,course)
     }
 
-    private fun fetchAttendanceForChart(lineChart: LineChart, rollNo: String?, branch: String?, semester: String?, batch: String?, course: String?) {
+    private fun fetchAttendanceForChart(
+        lineChart: LineChart,
+        rollNo: String?,
+        branch: String?,
+        semester: String?,
+        batch: String?,
+        course: String?
+    ) {
 
-        val ref =db.collection(course!!).document(branch!!).collection(semester!!
+        val ref = db.collection(course!!).document(branch!!).collection(
+            semester!!
         ).document(batch!!)
             .collection("studentsAttendance").document(rollNo!!).collection("attendance")
 
@@ -118,7 +124,7 @@ class StudentActivitysClass : AppCompatActivity() {
 
     }
 
-    private fun setupLineChart(lineChart: LineChart, entries: ArrayList<Entry>){
+    private fun setupLineChart(lineChart: LineChart, entries: ArrayList<Entry>) {
         val dataSet = LineDataSet(entries, "Attendance Activity")
         dataSet.color = Color.BLUE
         dataSet.setCircleColor(Color.RED)
@@ -153,43 +159,52 @@ class StudentActivitysClass : AppCompatActivity() {
         }
 
 
-
         // ✅ Check for null values before using them in Firestore
         if (course!!.isEmpty() || branch!!.isEmpty() || semester!!.isEmpty() || batch!!.isEmpty()) {
             Log.e("FirestoreError", "One or more required fields are empty!")
             return
         }
 
+
         val db = FirebaseFirestore.getInstance()
-        val ref = db.collection(course).document(branch).collection(semester
+        val ref = db.collection(course).document(branch).collection(
+            semester
         ).document(batch)
             .collection("studentsAttendance").document(rollNo).collection("attendance")
 
 
-        ref.get().addOnSuccessListener { snapshot ->
-            val presentDays = mutableListOf<EventDay>()
-            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-            for (document in snapshot.documents) {
-                val dateString = document.id // Firestore document ID is the date
-                val status = document.getString("status")
+        try {
+            ref.get().addOnSuccessListener { snapshot ->
+                val presentDays = mutableListOf<EventDay>()
+                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-                if (status == "Present") {
-                    val calendar = Calendar.getInstance()
-                    calendar.time = sdf.parse(dateString)!!
+                try {
+                    for (document in snapshot.documents) {
+                        val dateString = document.id // Firestore document ID is the date
+                        val status = document.getString("status")
 
-                    // ✅ Green mark for present days
-                    presentDays.add(EventDay(calendar,R.drawable.checked))
+                        if (status == "Present") {
+                            val calendar = Calendar.getInstance()
+                            calendar.time = sdf.parse(dateString)!!
+
+                            // ✅ Green mark for present days
+                            presentDays.add(EventDay(calendar, R.drawable.checked))
+                        }
+                    }
+
+                    // ✅ Set the marked dates on CalendarView
+                    calendarView.setEvents(presentDays)
+
+                } catch (e: Exception) {
+                    Log.e("ParseError", "Error parsing date: ${e.message}")
                 }
+            }.addOnFailureListener { e ->
+                Log.e("FirestoreError", "Error fetching attendance: ${e.message}")
             }
-
-            // ✅ Set the marked dates on CalendarView
-            calendarView.setEvents(presentDays)
-
-        }.addOnFailureListener { e ->
-            Log.e("FirestoreError", "Error fetching attendance: ${e.message}")
+        } catch (e: Exception) {
+            Log.e("GeneralError", "Unexpected error: ${e.message}")
         }
+
     }
-
-
 }

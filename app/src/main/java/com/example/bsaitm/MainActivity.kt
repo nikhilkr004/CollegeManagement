@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
+import com.example.bsaitm.Activity.ProfileActivity
 import com.example.bsaitm.Activity.SignUpActivity
 import com.example.bsaitm.Activity.StudentActivitysClass
 import com.example.bsaitm.Adapter.ImageAdapter
@@ -63,10 +66,15 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this@MainActivity,StudentActivitysClass::class.java))
         }
 
-        //get user info
-        getUserInfo()
+
+            getUserInfo()
+
+
+
+
+
         binding.profile.setOnClickListener {
-            startActivity(Intent(this,SignUpActivity::class.java))
+            startActivity(Intent(this,ProfileActivity::class.java))
         }
 
 
@@ -79,26 +87,35 @@ class MainActivity : AppCompatActivity() {
 
         val ref = db.collection("students").document(userId)
 
-        ref.get().addOnSuccessListener { document ->
-            if (document.exists()) {
-                val data = document.toObject(StudentData::class.java)
-                if (data != null) {
-                    binding.name.text = data.name
 
-                    /// Fetch Attendance
-                    fetchAttendance(data)
+        try {
+            ref.get().addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val data = document.toObject(StudentData::class.java)
+                    if (data != null) {
+                        binding.name.text = data.name
 
-                    val intent=Intent(this,StudentActivitysClass::class.java)
-                    intent.putExtra("branch",data.branch)
-                    intent.putExtra("sem",data.semester)
-                    intent.putExtra("course",data.course)
-                    intent.putExtra("batch",data.batch)
-                    intent.putExtra("rollNo",data.rollNo)
-                    startActivity(intent)
+                        Glide.with(this).load(data.profileImage).placeholder(R.drawable.user_)
+                            .into(binding.profile)
+
+                        /// Fetch Attendance
+                        fetchAttendance(data)
+
+                        val intent = Intent(this, StudentActivitysClass::class.java)
+                        intent.putExtra("branch", data.branch)
+                        intent.putExtra("sem", data.semester)
+                        intent.putExtra("course", data.course)
+                        intent.putExtra("batch", data.batch)
+                        intent.putExtra("rollNo", data.rollNo)
+                        startActivity(intent)
+                    }
                 }
+            }.addOnFailureListener { e ->
+                Toast.makeText(this, "Error fetching user info: ${e.message}", Toast.LENGTH_SHORT)
+                    .show()
             }
-        }.addOnFailureListener { e ->
-            Toast.makeText(this, "Error fetching user info: ${e.message}", Toast.LENGTH_SHORT).show()
+        } catch (e:Exception){
+            Log.d("###","error")
         }
     }
 
@@ -113,35 +130,46 @@ class MainActivity : AppCompatActivity() {
             .document(data.rollNo!!)
             .collection("attendance")
 
-        ref.get().addOnSuccessListener { snapshot ->
-            var presentDays = 0
-            var totalDays = 0
+        try {
+            ref.get().addOnSuccessListener { snapshot ->
+                var presentDays = 0
+                var totalDays = 0
 
-            // Loop through each attendance record (each date)
-            for (document in snapshot.documents) {
-                val status = document.getString("status")
-                if (status != null) {
-                    totalDays++
-                    if (status == "Present") {
-                        presentDays++
+                // Loop through each attendance record (each date)
+                for (document in snapshot.documents) {
+                    val status = document.getString("status")
+                    if (status != null) {
+                        totalDays++
+                        if (status == "Present") {
+                            presentDays++
+                        }
                     }
                 }
+
+                // Calculate the attendance percentage
+                val attendancePercentage = if (totalDays > 0) {
+                    (presentDays.toDouble() / totalDays.toFloat()) * 100
+                } else {
+                    0.0
+                }
+
+                binding.scoreProgressIndicator.progress = attendancePercentage.toInt()
+                val format = String.format("%.1f", attendancePercentage)
+                binding.scoreProgressText.text = "$format %"
+
+            }.addOnFailureListener { e ->
+                Toast.makeText(
+                    this@MainActivity,
+                    "Failed to load attendance data: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
+        }catch (e:Error){
 
-            // Calculate the attendance percentage
-            val attendancePercentage = if (totalDays > 0) {
-                (presentDays.toDouble() / totalDays.toFloat()) * 100
-            } else {
-                0.0
-            }
-
-            binding.scoreProgressIndicator.progress = attendancePercentage.toInt()
-            val format = String.format("%.1f", attendancePercentage)
-            binding.scoreProgressText.text = "$format %"
-
-        }.addOnFailureListener { e ->
-            Toast.makeText(this@MainActivity, "Failed to load attendance data: ${e.message}", Toast.LENGTH_SHORT).show()
         }
+
+
+
     }
 
 
