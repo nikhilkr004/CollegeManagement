@@ -10,6 +10,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
@@ -19,6 +20,8 @@ import com.example.bsaitm.Activity.ProfileActivity
 import com.example.bsaitm.Activity.SignUpActivity
 import com.example.bsaitm.Activity.StudentActivitysClass
 import com.example.bsaitm.Adapter.ImageAdapter
+import com.example.bsaitm.Adapter.NoticeAdapter
+import com.example.bsaitm.DataClass.NoticeData
 import com.example.bsaitm.DataClass.StudentData
 import com.example.bsaitm.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -28,12 +31,14 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
+    private lateinit var db: FirebaseFirestore
     private lateinit var databaseReference: DatabaseReference
     private lateinit var viewPager2: ViewPager2
     private lateinit var handler: Handler
@@ -48,6 +53,7 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        db = FirebaseFirestore.getInstance()
         databaseReference = FirebaseDatabase.getInstance().reference
         //image slider
         initalization()
@@ -63,18 +69,18 @@ class MainActivity : AppCompatActivity() {
 
 
         binding.track.setOnClickListener {
-            startActivity(Intent(this@MainActivity,StudentActivitysClass::class.java))
+            startActivity(Intent(this@MainActivity, StudentActivitysClass::class.java))
         }
 
 
-            getUserInfo()
+        getUserInfo()
 
 
-
+        fetchNoticeInfo()
 
 
         binding.profile.setOnClickListener {
-            startActivity(Intent(this,ProfileActivity::class.java))
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
 
 
@@ -114,8 +120,8 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Error fetching user info: ${e.message}", Toast.LENGTH_SHORT)
                     .show()
             }
-        } catch (e:Exception){
-            Log.d("###","error")
+        } catch (e: Exception) {
+            Log.d("###", "error")
         }
     }
 
@@ -164,14 +170,12 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        }catch (e:Error){
+        } catch (e: Error) {
 
         }
 
 
-
     }
-
 
 
     private fun initalization() {
@@ -224,6 +228,43 @@ class MainActivity : AppCompatActivity() {
 
     private val runnable = Runnable {
         viewPager2.currentItem = viewPager2.currentItem + 1
+    }
+
+
+    private fun fetchNoticeInfo() {
+        val noticeData = mutableListOf<NoticeData>()
+        val recyclerView = binding.noticeRecyclerview
+        recyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        val adapters = NoticeAdapter(noticeData)
+        recyclerView.adapter = adapters
+
+        val ref = db.collection("notice")
+
+        try {
+            ref.get().addOnSuccessListener { docuent ->
+                noticeData.clear()
+                for (document in docuent) {
+                    val data = document.toObject(NoticeData::class.java)
+
+                    if (data != null) {
+                        noticeData.add(data)
+
+                    }
+                    adapters.notifyDataSetChanged()
+                }
+            }.addOnFailureListener {
+                Toast.makeText(
+                    this,
+                    "error to fetch notice",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        } catch (e: Exception) {
+
+        }
+
+
     }
 }
 

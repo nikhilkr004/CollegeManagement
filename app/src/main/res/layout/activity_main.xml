@@ -18,7 +18,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/name"
@@ -26,12 +26,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:textSize="20sp"
                 android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-      />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/textView4"
@@ -71,10 +70,11 @@
 
 
             <LinearLayout
+                android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_140sdp"
-                android:orientation="horizontal"
                 android:gravity="center"
+                android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/viewPager2">
@@ -82,8 +82,9 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_130sdp"
-             android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginStart="@dimen/_10sdp"
                     android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_marginBottom="@dimen/_10sdp"
                     app:cardCornerRadius="@dimen/_15sdp"
                     app:cardElevation="@dimen/_5sdp">
 
@@ -125,9 +126,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
+                            android:fontFamily="@font/calistoga"
                             android:text="Attendance Chart"
                             android:textSize="25sp"
-                            android:fontFamily="@font/calistoga"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.494"
                             app:layout_constraintStart_toEndOf="@+id/score_progress_indicator"
@@ -150,16 +151,37 @@
                             app:layout_constraintHorizontal_bias="0.49"
                             app:layout_constraintStart_toEndOf="@+id/score_progress_indicator"
                             app:layout_constraintTop_toBottomOf="@+id/textView5" />
-
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.cardview.widget.CardView>
 
 
-
             </LinearLayout>
 
+
+
+            <TextView
+                android:id="@+id/noticication"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Notifications"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+                android:textSize="@dimen/_16sdp"
+                android:fontFamily="@font/caprasimo"
+                android:layout_marginStart="@dimen/_10sdp"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_height="@dimen/_160sdp"
+                android:id="@+id/noticeRecyclerview"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/noticication"
+                 />
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     </ScrollView>
 
