@@ -17,21 +17,24 @@ import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.bsaitm.Activity.ProfileActivity
-import com.example.bsaitm.Activity.SignUpActivity
 import com.example.bsaitm.Activity.StudentActivitysClass
 import com.example.bsaitm.Adapter.ImageAdapter
 import com.example.bsaitm.Adapter.NoticeAdapter
+import com.example.bsaitm.Adapter.SubjectsAttendanceAdapter
+import com.example.bsaitm.Constant.diplomacomputersem1b1
+import com.example.bsaitm.Constant.diplomacomputersem2b1
+import com.example.bsaitm.Constant.diplomacomputersem3b1
+import com.example.bsaitm.Constant.diplomacomputersem4b1
+import com.example.bsaitm.Constant.diplomacomputersem5b1
+import com.example.bsaitm.Constant.diplomacomputersem6b1
 import com.example.bsaitm.DataClass.NoticeData
 import com.example.bsaitm.DataClass.StudentData
+import com.example.bsaitm.DataClass.SubjectAttendance
 import com.example.bsaitm.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
 
 
 class MainActivity : AppCompatActivity() {
@@ -43,6 +46,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewPager2: ViewPager2
     private lateinit var handler: Handler
     private lateinit var imageList: ArrayList<Int>
+    private lateinit var studentData:ArrayList<StudentData>
+    private lateinit var subjectAttendanceList: ArrayList<SubjectAttendance>
     private lateinit var adapter: ImageAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +58,9 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        studentData= ArrayList()
+        subjectAttendanceList = ArrayList()
         db = FirebaseFirestore.getInstance()
         databaseReference = FirebaseDatabase.getInstance().reference
         //image slider
@@ -68,9 +76,7 @@ class MainActivity : AppCompatActivity() {
         })
 
 
-        binding.track.setOnClickListener {
-            startActivity(Intent(this@MainActivity, StudentActivitysClass::class.java))
-        }
+
 
 
         getUserInfo()
@@ -82,6 +88,8 @@ class MainActivity : AppCompatActivity() {
         binding.profile.setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java))
         }
+
+
 
 
     }
@@ -97,15 +105,18 @@ class MainActivity : AppCompatActivity() {
         try {
             ref.get().addOnSuccessListener { document ->
                 if (document.exists()) {
+                    studentData.clear()
                     val data = document.toObject(StudentData::class.java)
                     if (data != null) {
+                        studentData.add(data)
                         binding.name.text = data.name
 
                         Glide.with(this).load(data.profileImage).placeholder(R.drawable.user_)
                             .into(binding.profile)
 
-                        /// Fetch Attendance
+                        Toast.makeText(this, "${data.rollNo}", Toast.LENGTH_SHORT).show()
                         fetchAttendance(data)
+
 
                         val intent = Intent(this, StudentActivitysClass::class.java)
                         intent.putExtra("branch", data.branch)
@@ -113,7 +124,7 @@ class MainActivity : AppCompatActivity() {
                         intent.putExtra("course", data.course)
                         intent.putExtra("batch", data.batch)
                         intent.putExtra("rollNo", data.rollNo)
-                        startActivity(intent)
+//                        startActivity(intent)
                     }
                 }
             }.addOnFailureListener { e ->
@@ -126,24 +137,58 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+
+
+
     private fun fetchAttendance(data: StudentData) {
+        val subjectRecycleview = binding.attendanceRecycler
+        subjectRecycleview.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+
         val db = FirebaseFirestore.getInstance()
-        val ref = db.collection(data.course!!)
+        val studentRef = db.collection(data.course!!)
             .document(data.branch!!)
             .collection(data.semester!!)
             .document(data.batch!!)
             .collection("studentsAttendance")
             .document(data.rollNo!!)
-            .collection("attendance")
+            .collection("subjects") // ✅ Fetch all subjects dynamically
 
-        try {
-            ref.get().addOnSuccessListener { snapshot ->
+        Log.d("DEBUG", "Fetching subjects for Student: ${data.rollNo}")
+
+        // ✅ Fix 1: Subject List Selection
+        val selectedKey = data.course + data.branch + data.semester + data.batch
+        val subjectList = when (selectedKey) {
+            "diplomacomputersem1b1" -> diplomacomputersem1b1
+            "diplomacomputersem2b1" -> diplomacomputersem2b1
+            "diplomacomputersem3b1" -> diplomacomputersem3b1
+            "diplomacomputersem4b1" -> diplomacomputersem4b1
+            "diplomacomputersem5b1" -> diplomacomputersem5b1
+            "diplomacomputersem6b1" -> diplomacomputersem6b1
+            else -> emptyArray()
+        }
+
+        // ✅ Fix 2: Clear List Before Loop
+        subjectAttendanceList.clear()
+
+        val totalSubjects = subjectList.size
+        var completedSubjects = 0
+
+        // ✅ Fix 3: Initialize Adapter Before Loop
+        val adapters = SubjectsAttendanceAdapter(subjectAttendanceList,studentRef)
+        subjectRecycleview.adapter = adapters
+
+        subjectList.forEach { subject ->
+            val subjectName = subject.trim().replace(" ", "").lowercase()
+            Log.d("DEBUG", "Fetching Attendance for Subject: $subjectName")
+
+            val attendanceRef = studentRef.document(subjectName).collection("attendance")
+
+            attendanceRef.get().addOnSuccessListener { attendanceSnapshot ->
                 var presentDays = 0
                 var totalDays = 0
 
-                // Loop through each attendance record (each date)
-                for (document in snapshot.documents) {
-                    val status = document.getString("status")
+                for (attendanceDoc in attendanceSnapshot.documents) {
+                    val status = attendanceDoc.getString("status")
                     if (status != null) {
                         totalDays++
                         if (status == "Present") {
@@ -152,30 +197,34 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                // Calculate the attendance percentage
                 val attendancePercentage = if (totalDays > 0) {
                     (presentDays.toDouble() / totalDays.toFloat()) * 100
                 } else {
                     0.0
                 }
 
-                binding.scoreProgressIndicator.progress = attendancePercentage.toInt()
-                val format = String.format("%.1f", attendancePercentage)
-                binding.scoreProgressText.text = "$format %"
+                val formattedPercentage = String.format("%.1f", attendancePercentage)
+
+                // ✅ Fix 4: Update List Without Clearing
+                subjectAttendanceList.add(SubjectAttendance(subjectName, formattedPercentage))
+
+                Log.d("DEBUG", "Subject: $subjectName, Attendance: $formattedPercentage %")
+
+                // ✅ Fix 5: Update RecyclerView After All Subjects Are Fetched
+                completedSubjects++
+                if (completedSubjects == totalSubjects) {
+                    adapters.notifyDataSetChanged()
+                }
 
             }.addOnFailureListener { e ->
-                Toast.makeText(
-                    this@MainActivity,
-                    "Failed to load attendance data: ${e.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Log.e("FirestoreError", "Error fetching attendance for $subjectName: ${e.message}")
             }
-        } catch (e: Error) {
-
         }
-
-
     }
+
+
+
+
 
 
     private fun initalization() {
@@ -266,6 +315,8 @@ class MainActivity : AppCompatActivity() {
 
 
     }
-}
+
+    }
+
 
 

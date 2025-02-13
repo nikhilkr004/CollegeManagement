@@ -1,15 +1,19 @@
 package com.example.bsaitm.Activity
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.applandeo.materialcalendarview.CalendarView
 import com.applandeo.materialcalendarview.EventDay
+import com.bumptech.glide.Glide
+import com.example.bsaitm.DataClass.StudentData
 import com.example.bsaitm.R
 import com.example.bsaitm.databinding.ActivityStudentActivitysClassBinding
 import com.github.mikephil.charting.charts.LineChart
@@ -17,27 +21,20 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.google.firebase.auth.FirebaseAuth
 
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.ParseException
 
 
 class StudentActivitysClass : AppCompatActivity() {
     private val binding by lazy {
         ActivityStudentActivitysClassBinding.inflate(layoutInflater)
     }
-
-    companion object {
-        var rollNO: String = ""
-        var batch: String = ""
-        var branch: String = ""
-        var semester: String = ""
-        var course: String = ""
-    }
-
 
     private lateinit var db: FirebaseFirestore
 
@@ -51,17 +48,43 @@ class StudentActivitysClass : AppCompatActivity() {
             insets
         }
         db = FirebaseFirestore.getInstance()
+        getUserInfo()
 
-        val branch = intent.getStringExtra("branch")
-        val rollNo = intent.getStringExtra("rollNo")
-        val semester = intent.getStringExtra("sem")
-        val course = intent.getStringExtra("course")
-        val batch = intent.getStringExtra("batch")
-
-        markAttendanceOnCalendar(binding.calendarView, rollNo, branch, semester, batch, course)
-
-//        fetchAttendanceForChart(binding.lineChart,rollNo,branch,semester,batch,course)
     }
+
+
+
+    private fun getUserInfo() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+
+        val ref = db.collection("students").document(userId)
+
+
+        try {
+            ref.get().addOnSuccessListener { document ->
+                if (document.exists()) {
+
+                    val data = document.toObject(StudentData::class.java)
+                    if (data != null) {
+
+                        val subject=intent.getStringExtra("subject")
+                        Log.d("DEBUG","$subject${data.name}")
+                        markAttendanceOnCalendar(data.rollNo,data.branch,data.semester,data.batch,data.course,subject)
+                    }
+                }
+            }.addOnFailureListener { e ->
+                Toast.makeText(this, "Error fetching user info: ${e.message}", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        } catch (e: Exception) {
+            Log.d("###", "error")
+        }
+    }
+
+
+
+
 
     private fun fetchAttendanceForChart(
         lineChart: LineChart,
@@ -146,33 +169,29 @@ class StudentActivitysClass : AppCompatActivity() {
     }
 
     private fun markAttendanceOnCalendar(
-        calendarView: CalendarView,
         rollNo: String?,
         branch: String?,
         semester: String?,
         batch: String?,
-        course: String?
+        course: String?,
+        subject: String?
     ) {
         if (rollNo.isNullOrEmpty()) {
-            Log.e("FirestoreError", "Roll number is null or empty!")
+            Log.e("DEBUG", "Roll number is null or empty!")
             return
         }
 
-
-        // ✅ Check for null values before using them in Firestore
-        if (course!!.isEmpty() || branch!!.isEmpty() || semester!!.isEmpty() || batch!!.isEmpty()) {
-            Log.e("FirestoreError", "One or more required fields are empty!")
+        // ✅ Null or empty check
+        if (course.isNullOrEmpty() || branch.isNullOrEmpty() || semester.isNullOrEmpty() ||
+            batch.isNullOrEmpty() || subject.isNullOrEmpty()) {
+            Log.e("DEBUG", "One or more required fields are empty!")
             return
         }
-
 
         val db = FirebaseFirestore.getInstance()
-        val ref = db.collection(course).document(branch).collection(
-            semester
-        ).document(batch)
-            .collection("studentsAttendance").document(rollNo).collection("attendance")
-
-
+        val ref = db.collection(course).document(branch).collection(semester)
+            .document(batch).collection("studentsAttendance")
+            .document(rollNo).collection("subjects").document(subject).collection("attendance")
 
         try {
             ref.get().addOnSuccessListener { snapshot ->
@@ -180,7 +199,7 @@ class StudentActivitysClass : AppCompatActivity() {
                 val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
                 try {
-                    for (document in snapshot.documents) {
+                    for (document in snapshot) {
                         val dateString = document.id // Firestore document ID is the date
                         val status = document.getString("status")
 
@@ -194,7 +213,7 @@ class StudentActivitysClass : AppCompatActivity() {
                     }
 
                     // ✅ Set the marked dates on CalendarView
-                    calendarView.setEvents(presentDays)
+                    binding.calendarView.setEvents(presentDays)
 
                 } catch (e: Exception) {
                     Log.e("ParseError", "Error parsing date: ${e.message}")
@@ -205,6 +224,5 @@ class StudentActivitysClass : AppCompatActivity() {
         } catch (e: Exception) {
             Log.e("GeneralError", "Unexpected error: ${e.message}")
         }
-
     }
 }
