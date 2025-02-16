@@ -1,107 +1,103 @@
 package com.example.bsaitm.Adapter
 
+import android.app.AlertDialog
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bsaitm.databinding.LeaveStatusItemBinding
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
-
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class LeaveRequestAdapter(var data:MutableList<LeaveRequest>):RecyclerView.Adapter<LeaveRequestAdapter.ViewHolder>() {
+// Callback interface for handling edit and delete actions.
+interface LeaveItemActionListener {
+    fun onEdit(leave: LeaveRequest, position: Int)
+    fun onDelete(leave: LeaveRequest, position: Int)
+}
 
+class LeaveRequestAdapter(
+    private var data: MutableList<LeaveRequest>,
+    private val actionListener: LeaveItemActionListener
+) : RecyclerView.Adapter<LeaveRequestAdapter.ViewHolder>() {
 
+    // Updates the adapter's list and refreshes the RecyclerView.
+    fun updateList(newList: List<LeaveRequest>) {
+        data = newList.toMutableList()
+        notifyDataSetChanged()
+    }
 
-    class ViewHolder(val binding:LeaveStatusItemBinding):RecyclerView.ViewHolder(binding.root) {
+    // ViewHolder class using View Binding.
+    class ViewHolder(private val binding: LeaveStatusItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(leave: LeaveRequest, actionListener: LeaveItemActionListener) {
+            binding.title.text = leave.title
+            binding.status.text = leave.status
+            binding.time.text = convertTimestampToDate(leave.time)
+            binding.textView11.text = "${leave.fromDate} - ${leave.toDate}"
+            binding.teacherName.text = leave.teacherName
 
-
-
-
-        fun bind(data: LeaveRequest) {
-            binding.title.text=data.title
-            binding.status.text=data.status
-            binding.time.text=convertTimestampToDate(data.time)
-
-            binding.textView11.text="${data.fromDate} - ${data.toDate} "
-            binding.teacherName.text=data.teacherName.toString()
-
-            // 🔥 Status Color Change
+            // Set the status text color based on its value.
             binding.status.setTextColor(
-                when (data.status) {
+                when (leave.status) {
                     "Pending" -> Color.YELLOW
                     "Accepted" -> Color.GREEN
                     else -> Color.RED
                 }
             )
+
+            // Long-press on the item to show options.
+            binding.root.setOnLongClickListener {
+                val options = arrayOf("Edit", "Delete")
+                AlertDialog.Builder(binding.root.context)
+                    .setTitle("Select Option")
+                    .setItems(options) { dialog, which ->
+                        when (which) {
+                            0 -> actionListener.onEdit(leave, adapterPosition)
+                            1 -> actionListener.onDelete(leave, adapterPosition)
+                        }
+                    }
+                    .show()
+                true
+            }
         }
 
-        private fun convertTimestampToDate(time: Timestamp?): CharSequence? {
+        // Helper method to convert Timestamp to a formatted String.
+        private fun convertTimestampToDate(time: Timestamp?): String {
             return time?.toDate()?.let {
-                val sdf = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()) // 🔥 Format Define
+                val sdf = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
                 sdf.format(it)
-            } ?: "N/A" // Default Value if Timestamp is Null
+            } ?: "N/A"
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val inflater=LayoutInflater.from(parent.context)
-        val binding=LeaveStatusItemBinding.inflate(inflater,parent,false)
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = LeaveStatusItemBinding.inflate(inflater, parent, false)
         return ViewHolder(binding)
     }
 
-    override fun getItemCount(): Int {
-        return data.size
-    }
+    override fun getItemCount(): Int = data.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val data=data[position]
-        holder.bind(data)
+        holder.bind(data[position], actionListener)
     }
 
-
-    fun updateList(newList: List<LeaveRequest>) {
-        data=newList.toMutableList()
-        notifyDataSetChanged()  // 🔥 RecyclerView ko refresh karega
-    }
-
-
+    // Removes an item from Firestore and updates the RecyclerView.
     fun removeItem(position: Int) {
-        Log.d("LeaveRequestAdapter", "removeItem called for position: $position")
-
-        if (position < 0 || position >= data.size) {
-            Log.e("LeaveRequestAdapter", "Invalid position: $position")
-            return
-        }
+        if (position < 0 || position >= data.size) return
 
         val removedItem = data[position]
-        Log.d("LeaveRequestAdapter", "Removing item: ${removedItem.title}, leaveId: ${removedItem.leaveId}")
-
-        if (removedItem.leaveId.isNullOrEmpty()) {
-            Log.e("LeaveRequestAdapter", "leaveId is null or empty for position: $position")
-            notifyItemChanged(position)
-            return
-        }
-
         FirebaseFirestore.getInstance().collection("leave_requests")
             .document(removedItem.leaveId)
             .delete()
             .addOnSuccessListener {
-                Log.d("LeaveRequestAdapter", "Firestore deletion successful")
-
-                    data.removeAt(position)
-                    notifyItemRemoved(position)
-
+                data.removeAt(position)
+                notifyItemRemoved(position)
             }
             .addOnFailureListener { e ->
-                Log.e("LeaveRequestAdapter", "Firestore deletion failed: ${e.message}")
+                e.printStackTrace()
                 notifyItemChanged(position)
             }
     }
-
-
 }

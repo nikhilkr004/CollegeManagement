@@ -119,7 +119,6 @@ class MainActivity : AppCompatActivity() {
                         Glide.with(this).load(data.profileImage).placeholder(R.drawable.user_)
                             .into(binding.profile)
 
-                        Toast.makeText(this, "${data.rollNo}", Toast.LENGTH_SHORT).show()
                         fetchAttendance(data)
 
 
