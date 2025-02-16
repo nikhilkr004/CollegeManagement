@@ -72,32 +72,105 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/attendanceRecycler"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_160sdp"
+                android:layout_height="@dimen/_170sdp"
                 android:layout_marginTop="@dimen/_5sdp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/viewPager2" />
 
 
-
-            <TextView
-                android:id="@+id/noticication"
-                android:layout_width="match_parent"
+            <GridLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Notifications"
-                app:layout_constraintTop_toBottomOf="@+id/attendanceRecycler"
-                android:textSize="@dimen/_16sdp"
-                android:fontFamily="@font/caprasimo"
-                android:layout_marginStart="@dimen/_10sdp"/>
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_height="@dimen/_160sdp"
-                android:id="@+id/noticeRecyclerview"
+                android:layout_gravity="center_horizontal"
+                android:columnCount="2"
+                android:gravity="center"
+                android:rowCount="2"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/noticication"
-                 />
+                app:layout_constraintTop_toBottomOf="@+id/attendanceRecycler">
+
+                <!-- Check-in Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/leaveRequest"
+                    android:layout_width="@dimen/_130sdp"
+                    android:layout_height="@dimen/_110sdp"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#E76E8B"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <ImageView
+                            android:layout_width="@dimen/_50sdp"
+                            android:layout_height="@dimen/_50sdp"
+                            android:layout_gravity="center_horizontal"
+                            android:src="@drawable/exit"
+                            android:textColor="#000000"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/calistoga"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="@dimen/_3sdp"
+                            android:text="Leave Request"
+                            android:textColor="#EFEAEA"
+                            android:textSize="@dimen/_13sdp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Check-out Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/viewNotice"
+                    android:layout_width="@dimen/_130sdp"
+                    android:layout_height="@dimen/_110sdp"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#33A4D8"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <ImageView
+                            android:layout_width="@dimen/_50sdp"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_height="@dimen/_50sdp"
+                            android:textSize="18sp"
+                            android:src="@drawable/noticeboard"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="View Notice"
+                            android:fontFamily="@font/calistoga"
+                            android:textColor="#EFEAEA"
+                            android:layout_marginTop="@dimen/_3sdp"
+                           android:layout_gravity="center_horizontal"
+                            android:textStyle="bold"
+                            android:textSize="@dimen/_13sdp" />
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+
+            </GridLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

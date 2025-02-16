@@ -3,8 +3,10 @@ package com.example.bsaitm.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -33,6 +35,8 @@ class ProfileActivity : AppCompatActivity() {
     private var profileImageUri: Uri? = null
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
+    private var studentName:String?=null
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -45,8 +49,10 @@ class ProfileActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-
+        setStatusbarColor()
         fatchProfileInfo()
+
+        binding.backBtn.setOnClickListener { finish() }
 
         binding.logoutLayout.setOnClickListener {
             logoutUser(this)
@@ -54,6 +60,12 @@ class ProfileActivity : AppCompatActivity() {
 
         binding.updateProfileLayout.setOnClickListener {
             updateUserProfile(profileImageUri)
+        }
+
+        binding.leaveLayout.setOnClickListener {
+          val intent=Intent(this,LeaveActivity::class.java)
+            intent.putExtra("name",studentName)
+            startActivity(intent)
         }
 
     }
@@ -64,7 +76,7 @@ class ProfileActivity : AppCompatActivity() {
         val saveBtn = view.findViewById<TextView>(R.id.editprofile)
         val cancel = view.findViewById<TextView>(R.id.cencel)
         val profileImage = view.findViewById<CircleImageView>(R.id.profile_image)
-        val name: EditText = view.findViewById(R.id.name)
+        var name: EditText = view.findViewById(R.id.name)
         val number: EditText = view.findViewById(R.id.number)
         val branch: EditText = view.findViewById(R.id.branch)
         val rollNo: EditText = view.findViewById(R.id.ronnno)
@@ -79,8 +91,10 @@ class ProfileActivity : AppCompatActivity() {
         try {
             ref.get().addOnSuccessListener { document ->
                 if (document.exists()) {
+
                     val data = document.toObject(StudentData::class.java)
                     if (data != null) {
+                        studentName=data.name.toString()
                         name.setText(data.name.toString())
                         number.setText(data.number.toString())
                         rollNo.setText(data.rollNo.toString())
@@ -303,4 +317,11 @@ class ProfileActivity : AppCompatActivity() {
             updateUserProfile(profileImageUri)
         }
     }
+    private fun setStatusbarColor(){
+        // Change the status bar color
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor = resources.getColor(R.color.colorPrimary, theme)
+        }
+    }
+
 }

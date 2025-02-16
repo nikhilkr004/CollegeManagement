@@ -16,6 +16,8 @@ import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.example.bsaitm.Activity.LeaveActivity
+import com.example.bsaitm.Activity.NoticeActivity
 import com.example.bsaitm.Activity.ProfileActivity
 import com.example.bsaitm.Activity.StudentActivitysClass
 import com.example.bsaitm.Adapter.ImageAdapter
@@ -81,14 +83,17 @@ class MainActivity : AppCompatActivity() {
 
         getUserInfo()
 
-
-        fetchNoticeInfo()
-
-
         binding.profile.setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java))
         }
 
+        binding.viewNotice.setOnClickListener {
+            startActivity(Intent(this,NoticeActivity::class.java))
+        }
+
+        binding.leaveRequest.setOnClickListener {
+            startActivity(Intent(this,LeaveActivity::class.java))
+        }
 
 
 
@@ -277,43 +282,6 @@ class MainActivity : AppCompatActivity() {
 
     private val runnable = Runnable {
         viewPager2.currentItem = viewPager2.currentItem + 1
-    }
-
-
-    private fun fetchNoticeInfo() {
-        val noticeData = mutableListOf<NoticeData>()
-        val recyclerView = binding.noticeRecyclerview
-        recyclerView.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        val adapters = NoticeAdapter(noticeData)
-        recyclerView.adapter = adapters
-
-        val ref = db.collection("notice")
-
-        try {
-            ref.get().addOnSuccessListener { docuent ->
-                noticeData.clear()
-                for (document in docuent) {
-                    val data = document.toObject(NoticeData::class.java)
-
-                    if (data != null) {
-                        noticeData.add(data)
-
-                    }
-                    adapters.notifyDataSetChanged()
-                }
-            }.addOnFailureListener {
-                Toast.makeText(
-                    this,
-                    "error to fetch notice",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        } catch (e: Exception) {
-
-        }
-
-
     }
 
     }

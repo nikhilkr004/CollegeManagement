@@ -9,15 +9,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.bsaitm.DataClass.NoticeData
 import com.example.bsaitm.R
-import com.example.bsaitm.databinding.ShowNoticeUiDesignBinding
+import com.example.bsaitm.databinding.LeaveStatusItemBinding
+import com.example.bsaitm.databinding.ViewDeleteNoticeItemBinding
+
 import com.github.marlonlom.utilities.timeago.TimeAgo
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class NoticeAdapter(val data:List<NoticeData>):RecyclerView.Adapter<NoticeAdapter.ViewHolder>() {
 
 
-    class ViewHolder(val binding:ShowNoticeUiDesignBinding):RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(val binding:ViewDeleteNoticeItemBinding):RecyclerView.ViewHolder(binding.root) {
         fun bind(data: NoticeData) {
             val db=FirebaseFirestore.getInstance()
             val context=binding.root.context
@@ -27,16 +31,16 @@ class NoticeAdapter(val data:List<NoticeData>):RecyclerView.Adapter<NoticeAdapte
 
                 val ref = db.collection("Teacher").document(data.userUid)
                 ref.get().addOnSuccessListener {
-                    document->
+                        document->
 
                     if (document.exists()) {
 
                         val userdata = document.toObject(Teacher::class.java)
 
                         try {
-                            binding.useName.text = userdata!!.name.toString()
+                            binding.userName.text = userdata!!.name.toString()
                             Glide.with(context).load(userdata.image).placeholder(R.drawable.user_)
-                                .into(binding.profileImage)
+                                .into(binding.icon)
                         }catch (e:Exception){
 
                         }
@@ -47,19 +51,27 @@ class NoticeAdapter(val data:List<NoticeData>):RecyclerView.Adapter<NoticeAdapte
                 }.addOnFailureListener { Toast.makeText(context, "error to fetch data ", Toast.LENGTH_SHORT).show() }
             }catch (e:Exception){
                 Log.d("@@","error")
-            }
+               }
 
 
-            binding.time.text= TimeAgo.using(data.date!!.toLong())
+            binding.date.text=convertTimestampToDate(data.date)
             binding.title.text=data.title.toString()
-            binding.dise.text=data.disc.toString()
+            binding.noticeDetails.text=data.disc
+
         }
+        private fun convertTimestampToDate(time: Timestamp?): CharSequence? {
+            return time?.toDate()?.let {
+                val sdf = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()) // 🔥 Format Define
+                sdf.format(it)
+            } ?: "N/A" // Default Value if Timestamp is Null
+        }
+
 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
        val inflater=LayoutInflater.from(parent.context)
-        val binding=ShowNoticeUiDesignBinding.inflate(inflater)
+        val binding=ViewDeleteNoticeItemBinding.inflate(inflater)
         return ViewHolder(binding)
     }
 
