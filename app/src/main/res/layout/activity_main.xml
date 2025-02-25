@@ -8,6 +8,18 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <!-- Lottie Animation as Background -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottieBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:lottie_rawRes="@raw/blueanimation"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        android:scaleType="fitXY"
+        android:alpha="0.5" /> <!-- Set transparency to blend with content -->
+
+    <!-- ScrollView and Other Content -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -37,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/calistoga"
-                android:text="Let`s Learning\nTogether!"
+                android:text="Let’s Learn\nTogether!"
                 android:textSize="30sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/name"
@@ -47,7 +59,6 @@
                 android:id="@+id/profile"
                 android:layout_width="48dp"
                 android:layout_height="53dp"
-
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:src="@drawable/fa"
@@ -55,7 +66,6 @@
                 app:civ_border_width="2dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/viewPager2"
@@ -68,7 +78,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/attendanceRecycler"
                 android:layout_width="match_parent"
@@ -77,7 +86,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/viewPager2" />
-
 
             <GridLayout
                 android:layout_width="wrap_content"
@@ -91,13 +99,11 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/attendanceRecycler">
 
-                <!-- Check-in Card -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/leaveRequest"
                     android:layout_width="@dimen/_130sdp"
                     android:layout_height="@dimen/_110sdp"
                     android:layout_margin="8dp"
-                    android:layout_weight="1"
                     android:backgroundTint="#E76E8B"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="4dp">
@@ -112,16 +118,14 @@
                             android:layout_width="@dimen/_50sdp"
                             android:layout_height="@dimen/_50sdp"
                             android:layout_gravity="center_horizontal"
-                            android:src="@drawable/exit"
-                            android:textColor="#000000"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
+                            android:src="@drawable/exit" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/calistoga"
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="@dimen/_3sdp"
+                            android:fontFamily="@font/calistoga"
                             android:text="Leave Request"
                             android:textColor="#EFEAEA"
                             android:textSize="@dimen/_13sdp"
@@ -130,13 +134,11 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <!-- Check-out Card -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/viewNotice"
                     android:layout_width="@dimen/_130sdp"
                     android:layout_height="@dimen/_110sdp"
                     android:layout_margin="8dp"
-                    android:layout_weight="1"
                     android:backgroundTint="#33A4D8"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="4dp">
@@ -149,34 +151,28 @@
 
                         <ImageView
                             android:layout_width="@dimen/_50sdp"
-                            android:layout_gravity="center_horizontal"
                             android:layout_height="@dimen/_50sdp"
-                            android:textSize="18sp"
-                            android:src="@drawable/noticeboard"
-                            android:textStyle="bold" />
+                            android:layout_gravity="center_horizontal"
+                            android:src="@drawable/noticeboard" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="View Notice"
-                            android:fontFamily="@font/calistoga"
-                            android:textColor="#EFEAEA"
+                            android:layout_gravity="center_horizontal"
                             android:layout_marginTop="@dimen/_3sdp"
-                           android:layout_gravity="center_horizontal"
-                            android:textStyle="bold"
-                            android:textSize="@dimen/_13sdp" />
+                            android:fontFamily="@font/calistoga"
+                            android:text="View Notice"
+                            android:textColor="#EFEAEA"
+                            android:textSize="@dimen/_13sdp"
+                            android:textStyle="bold" />
                     </LinearLayout>
 
                 </androidx.cardview.widget.CardView>
 
-
             </GridLayout>
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
     </ScrollView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

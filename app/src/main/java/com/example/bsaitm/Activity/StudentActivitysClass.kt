@@ -1,8 +1,6 @@
 package com.example.bsaitm.Activity
 
-import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -10,17 +8,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.applandeo.materialcalendarview.CalendarView
+import com.anychart.AnyChart
+import com.anychart.chart.common.dataentry.DataEntry
+import com.anychart.chart.common.dataentry.ValueDataEntry
+import com.anychart.charts.Pie
+import com.anychart.enums.Align
+import com.anychart.enums.LegendLayout
 import com.applandeo.materialcalendarview.EventDay
-import com.bumptech.glide.Glide
 import com.example.bsaitm.DataClass.StudentData
 import com.example.bsaitm.R
 import com.example.bsaitm.databinding.ActivityStudentActivitysClassBinding
-import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
 import com.google.firebase.auth.FirebaseAuth
 
 import java.text.SimpleDateFormat
@@ -28,7 +25,6 @@ import java.util.Calendar
 import java.util.Locale
 
 import com.google.firebase.firestore.FirebaseFirestore
-import java.text.ParseException
 
 
 class StudentActivitysClass : AppCompatActivity() {
@@ -59,6 +55,9 @@ class StudentActivitysClass : AppCompatActivity() {
 
 
         val ref = db.collection("students").document(userId)
+        val percent=intent.getStringExtra("percent")?.toFloatOrNull()?.toInt() ?: 0
+
+        setupPieChart(percent)
 
 
         try {
@@ -71,6 +70,8 @@ class StudentActivitysClass : AppCompatActivity() {
                         val subject=intent.getStringExtra("subject")
                         Log.d("DEBUG","$subject${data.name}")
                         markAttendanceOnCalendar(data.rollNo,data.branch,data.semester,data.batch,data.course,subject)
+
+
                     }
                 }
             }.addOnFailureListener { e ->
@@ -82,91 +83,29 @@ class StudentActivitysClass : AppCompatActivity() {
         }
     }
 
+    private fun setupPieChart(percent: Int) {
+        val pie: Pie = AnyChart.pie()
 
+        val absentPercentage = 100 - percent
 
+        val data: MutableList<DataEntry> = ArrayList()
+        data.add(ValueDataEntry("Present", percent))
+        data.add(ValueDataEntry("Absent", absentPercentage))
 
+        pie.data(data)
 
-    private fun fetchAttendanceForChart(
-        lineChart: LineChart,
-        rollNo: String?,
-        branch: String?,
-        semester: String?,
-        batch: String?,
-        course: String?
-    ) {
+        pie.title("Attendance Percentage")
+        pie.labels().position("outside")
 
-        val ref = db.collection(course!!).document(branch!!).collection(
-            semester!!
-        ).document(batch!!)
-            .collection("studentsAttendance").document(rollNo!!).collection("attendance")
+        pie.legend()
+            .position("center-bottom")
+            .itemsLayout(LegendLayout.HORIZONTAL)
+            .align(Align.CENTER)
 
-
-        ref.get().addOnSuccessListener { snapshot ->
-            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val attendanceData = mutableMapOf<Int, MutableList<Pair<Int, Float>>>()
-
-            for (document in snapshot.documents) {
-                val dateString = document.id // Firestore document ID is the date
-                val status = document.getString("status")
-
-                val calendar = Calendar.getInstance()
-                calendar.time = sdf.parse(dateString)!!
-                val weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR)
-                val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-
-                // Y-axis value: 1 for Present, -1 for Absent
-                val attendanceValue = if (status == "Present") 1f else -1f
-
-                // Store data per week
-                if (!attendanceData.containsKey(weekOfYear)) {
-                    attendanceData[weekOfYear] = mutableListOf()
-                }
-                attendanceData[weekOfYear]?.add(Pair(dayOfWeek, attendanceValue))
-            }
-
-            // Process data for Line Chart
-            val entries = ArrayList<Entry>()
-            var xIndex = 0
-
-            for ((week, days) in attendanceData) {
-                days.sortBy { it.first } // Sort by day of the week
-                for ((day, value) in days) {
-                    entries.add(Entry(xIndex.toFloat(), value))
-                    xIndex++
-                }
-                // Add a gap between weeks
-                xIndex += 2
-            }
-
-            // Update Line Chart
-            setupLineChart(lineChart, entries)
-
-        }.addOnFailureListener { e ->
-            Log.e("FirestoreError", "Error fetching attendance: ${e.message}")
-        }
-
+        binding.pieChartView.setChart(pie)
     }
 
-    private fun setupLineChart(lineChart: LineChart, entries: ArrayList<Entry>) {
-        val dataSet = LineDataSet(entries, "Attendance Activity")
-        dataSet.color = Color.BLUE
-        dataSet.setCircleColor(Color.RED)
-        dataSet.circleRadius = 5f
-        dataSet.valueTextSize = 10f
-        dataSet.lineWidth = 3f
 
-        val lineData = LineData(dataSet)
-
-        lineChart.data = lineData
-        lineChart.invalidate() // Refresh chart
-
-        // Customize X-Axis
-        val xAxis = lineChart.xAxis
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.granularity = 1f
-        xAxis.textSize = 12f
-
-    }
 
     private fun markAttendanceOnCalendar(
         rollNo: String?,

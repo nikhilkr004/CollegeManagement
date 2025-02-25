@@ -2,6 +2,7 @@ package com.example.bsaitm.Activity
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -64,6 +65,15 @@ class NoticeActivity : AppCompatActivity() {
                     val data = document.toObject(NoticeData::class.java)
                     data?.let { noticeData.add(it) }
                 }
+
+//                if (noticeData.isEmpty()){
+//                    binding.noticeRecycler.visibility=View.GONE
+//                    binding.lottieAnimationView.visibility=View.VISIBLE
+//                }else{
+//                    binding.lottieAnimationView.visibility=View.GONE
+//                    binding.noticeRecycler.visibility=View.VISIBLE
+//                }
+
                 noticeAdapter.notifyDataSetChanged() // ✅ RecyclerView Update
             }.addOnFailureListener {
                 Toast.makeText(this, "Error fetching notices", Toast.LENGTH_SHORT).show()

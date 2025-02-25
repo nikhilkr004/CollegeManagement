@@ -24,6 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/score_progress_indicator"
                 android:layout_width="100dp"
@@ -38,7 +39,7 @@
                 app:trackColor="#E92121"
                 app:trackCornerRadius="2dp"
                 app:trackThickness="20dp"
-                tools:progress="70" />
+                tools:progress="70"/>
 
             <TextView
                 android:id="@+id/score_progress_text"
@@ -50,16 +51,15 @@
                 app:layout_constraintBottom_toBottomOf="@+id/score_progress_indicator"
                 app:layout_constraintEnd_toEndOf="@+id/score_progress_indicator"
                 app:layout_constraintStart_toStartOf="@+id/score_progress_indicator"
-                app:layout_constraintTop_toTopOf="@+id/score_progress_indicator"
-                tools:text="50%" />
+                app:layout_constraintTop_toTopOf="@+id/score_progress_indicator" />
 
             <TextView
                 android:id="@+id/textView5"
                 android:layout_width="0dp"
-                android:layout_marginStart="@dimen/_4sdp"
-                android:layout_marginEnd="@dimen/_4sdp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_4sdp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="@dimen/_4sdp"
 
                 android:fontFamily="@font/calistoga"
                 android:text="Attendance Chart"
@@ -72,9 +72,9 @@
             <TextView
                 android:id="@+id/track"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_2sdp"
                 android:layout_marginEnd="@dimen/_2sdp"
-                android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/_4sdp"
                 android:background="@drawable/tool_bar_back"
                 android:fontFamily="@font/calistoga"

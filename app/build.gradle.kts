@@ -69,5 +69,9 @@ dependencies {
     /////time
     implementation (libs.timeago)
 
+    //Lottie animation
+    implementation ("com.airbnb.android:lottie:6.1.0")
+
+    implementation ("com.github.AnyChart:AnyChart-Android:1.1.5")
 }
 

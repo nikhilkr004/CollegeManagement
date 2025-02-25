@@ -1,8 +1,10 @@
 package com.example.bsaitm.Activity
 
+import LeaveRequestAdapter
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
@@ -12,12 +14,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bsaitm.Adapter.LeaveItemActionListener
+import attachSwipeToDelete
 import com.example.bsaitm.Adapter.LeaveRequest
-import com.example.bsaitm.Adapter.LeaveRequestAdapter
 import com.example.bsaitm.Constant
 import com.example.bsaitm.R
 import com.example.bsaitm.databinding.ActivityLeaveBinding
@@ -25,10 +25,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import java.util.Calendar
 
-class LeaveActivity : AppCompatActivity(),LeaveItemActionListener{
+class LeaveActivity : AppCompatActivity() {
 
     private val binding by lazy {
         ActivityLeaveBinding.inflate(layoutInflater)
@@ -36,7 +35,7 @@ class LeaveActivity : AppCompatActivity(),LeaveItemActionListener{
 
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
-    private var leaveRequests = mutableListOf<LeaveRequest>()
+    private var leaveRequests = mutableListOf<LeaveRequest>() // ✅ Fixed List Initialization
     private lateinit var adapter: LeaveRequestAdapter
     private var selectedTeacherId = ""
     private var selectedTeacherName = ""
@@ -51,6 +50,7 @@ class LeaveActivity : AppCompatActivity(),LeaveItemActionListener{
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
         recyclerView = binding.requestRecyclerview
@@ -69,15 +69,21 @@ class LeaveActivity : AppCompatActivity(),LeaveItemActionListener{
         db.collection("leave_requests")
             .whereEqualTo("studentId", userId)
             .addSnapshotListener { snapshots, _ ->
+
+                leaveRequests.clear()
+
                 if (snapshots != null) {
                     val leaveList = snapshots.documents.mapNotNull { doc ->
                         doc.toObject(LeaveRequest::class.java)?.copy(leaveId = doc.id)
                     }
 
-                    // 🔥 Sort List By Timestamp (Latest First)
                     val sortedLeaveList = leaveList.sortedByDescending { it.time }
-
-                    adapter.updateList(sortedLeaveList) // ✅ RecyclerView Update
+//                    if (leaveList.isEmpty()){
+//                        binding.requestRecyclerview.visibility=View.GONE
+//                        binding.i
+//                    }
+                    leaveRequests.addAll(sortedLeaveList) // ✅ Fixed List Addition
+                   adapter.notifyDataSetChanged()// ✅ Ensure UI Updates
                 }
             }
     }
@@ -96,7 +102,6 @@ class LeaveActivity : AppCompatActivity(),LeaveItemActionListener{
         startDate.setOnClickListener { selectDate(startDate) }
         endDate.setOnClickListener { selectDate(endDate) }
 
-        // Fetch teacher data
         db.collection("Teacher").get()
             .addOnSuccessListener { documents ->
                 val teacherList = ArrayList<String>()
@@ -136,42 +141,58 @@ class LeaveActivity : AppCompatActivity(),LeaveItemActionListener{
         endDate: EditText,
         studentName: String?
     ) {
+
+        try {
+
+
         val fromDate = startDate.text.toString()
         val toDate = endDate.text.toString()
         val reason = lvReason.text.toString()
         val title = lvTitle.text.toString()
         val studentId = auth.currentUser?.uid ?: return
 
-        if (selectedTeacherId.isEmpty() || fromDate.isEmpty() || toDate.isEmpty() || reason.isEmpty()) {
+        if (selectedTeacherId.isEmpty() && fromDate.isEmpty() && toDate.isEmpty() && reason.isEmpty() && title.isEmpty()) {
+            Constant.hideDialog()
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
-            return
+        } else {
+            val uniqueId = generateFirestoreId()
+            val leaveRequest = LeaveRequest(
+                studentId = studentId,
+                studentName = studentName.toString(),
+                teacherId = selectedTeacherId,
+                teacherName = selectedTeacherName,
+                fromDate = fromDate,
+                toDate = toDate,
+                title = title,
+                time = Timestamp.now(),
+                reason = reason,
+                leaveId = uniqueId,
+                status = "Pending"
+            )
+
+            db.collection("leave_requests").document(uniqueId).set(leaveRequest)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Leave Request Submitted", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                    fetchLeaveData() // ✅ Refresh data
+                    Constant.hideDialog()
+                }
+                .addOnFailureListener {
+                    Constant.hideDialog()
+                    Toast.makeText(this, "Failed to Submit", Toast.LENGTH_SHORT).show()
+                }
         }
+        }catch (e:Exception ){
+            Log.d("DEBUG","${e.localizedMessage}")
+        }
+    }
 
-        val uniqueId = generateFirestoreId()
-        val leaveRequest = LeaveRequest(
-            studentId = studentId,
-            studentName = studentName.toString(),
-            teacherId = selectedTeacherId,
-            teacherName = selectedTeacherName,
-            fromDate = fromDate,
-            toDate = toDate,
-            title = title,
-            time = Timestamp.now(),
-            reason = reason,
-            leaveId = uniqueId,
-            status = "Pending"
-        )
+    private fun setupRecyclerView() {
+        adapter = LeaveRequestAdapter(leaveRequests)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
 
-        db.collection("leave_requests").document(uniqueId).set(leaveRequest)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Leave Request Submitted", Toast.LENGTH_SHORT).show()
-                dialog.dismiss()
-                Constant.hideDialog()
-            }
-            .addOnFailureListener {
-                Constant.hideDialog()
-                Toast.makeText(this, "Failed to Submit", Toast.LENGTH_SHORT).show()
-            }
+        attachSwipeToDelete(recyclerView,adapter)
     }
 
     private fun selectDate(editText: EditText) {
@@ -188,48 +209,7 @@ class LeaveActivity : AppCompatActivity(),LeaveItemActionListener{
         datePicker.show()
     }
 
-    fun generateFirestoreId(): String {
-        return FirebaseFirestore.getInstance().collection("dummy").document().id
-    }
 
-    private fun setupRecyclerView() {
-        try {
-            adapter = LeaveRequestAdapter(leaveRequests.toMutableList(), this)
-            recyclerView.layoutManager = LinearLayoutManager(this)
-            recyclerView.adapter = adapter
 
-//            val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-//                override fun onMove(
-//                    recyclerView: RecyclerView,
-//                    viewHolder: RecyclerView.ViewHolder,
-//                    target: RecyclerView.ViewHolder
-//                ): Boolean = false
-//
-//                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-//                    val position = viewHolder.adapterPosition
-//                    if (position != RecyclerView.NO_POSITION) {
-//                        // You can choose to call onDelete here or let the long-press dialog handle deletion.
-//                        onDelete(leaveRequests[position], position)
-//                    } else {
-//                        adapter.notifyDataSetChanged()
-//                    }
-//                }
-//            })
-//            itemTouchHelper.attachToRecyclerView(recyclerView)
-        } catch (e: Exception) {
-            Log.d("DEBUG", e.localizedMessage)
-        }
-    }
-
-    override fun onEdit(leave: LeaveRequest, position: Int) {
-        // Open a BottomSheetDialog (or any edit dialog) to allow editing.
-        Toast.makeText(this, "Edit: ${leave.title}", Toast.LENGTH_SHORT).show()
-        // Implement your edit logic here (for example, prefill a dialog with leave data).
-    }
-
-    override fun onDelete(leave: LeaveRequest, position: Int) {
-        // Call adapter.removeItem() to delete the item.
-        adapter.removeItem(position)
-        Toast.makeText(this, "Deleted: ${leave.title}", Toast.LENGTH_SHORT).show()
-    }
+    fun generateFirestoreId(): String = FirebaseFirestore.getInstance().collection("leave_requests").document().id
 }
