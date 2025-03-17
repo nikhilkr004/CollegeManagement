@@ -38,7 +38,7 @@
         android:text="Discuss about the new feature to add jobdesk® web application"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:textColor="@android:color/black"
+        android:textColor="@android:color/white"
         app:layout_constraintStart_toEndOf="@id/icon"
         app:layout_constraintTop_toTopOf="@id/icon"
         app:layout_constraintEnd_toEndOf="parent"
@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:text="Sabir Hossain"
         android:textSize="12sp"
-        android:textColor="@android:color/black"
+        android:textColor="@android:color/white"
         app:layout_constraintStart_toStartOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/title"
         android:layout_marginTop="4dp" />
@@ -76,7 +76,7 @@
         android:text="Notice Details"
         android:textSize="15sp"
         android:textStyle="bold"
-        android:textColor="@android:color/black"
+        android:textColor="@android:color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/user_name"
         android:layout_marginTop="12dp" />

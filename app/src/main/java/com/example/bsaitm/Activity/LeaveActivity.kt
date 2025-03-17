@@ -60,8 +60,17 @@ class LeaveActivity : AppCompatActivity() {
             showLeaveDropdown(studentName)
         }
 
+        binding.backBtn.setOnClickListener { finish() }
+
+        // setting up recyclerview
         setupRecyclerView()
+
+        /// fetching leave data
         fetchLeaveData()
+
+
+
+
     }
 
     private fun fetchLeaveData() {
@@ -78,15 +87,30 @@ class LeaveActivity : AppCompatActivity() {
                     }
 
                     val sortedLeaveList = leaveList.sortedByDescending { it.time }
-//                    if (leaveList.isEmpty()){
-//                        binding.requestRecyclerview.visibility=View.GONE
-//                        binding.i
-//                    }
-                    leaveRequests.addAll(sortedLeaveList) // ✅ Fixed List Addition
-                   adapter.notifyDataSetChanged()// ✅ Ensure UI Updates
+
+
+                    leaveRequests.addAll(sortedLeaveList)
+
+                    checkEmptyState()
+
+                    adapter.notifyDataSetChanged()
+
                 }
             }
     }
+
+    private fun checkEmptyState() {
+        ///condition
+        if (leaveRequests.isEmpty()){
+            binding.requestRecyclerview.visibility=View.GONE
+            binding.lottieAnimationView.visibility=View.VISIBLE
+        }
+        else{
+            binding.requestRecyclerview.visibility=View.VISIBLE
+            binding.lottieAnimationView.visibility=View.GONE
+        }
+    }
+
 
     private fun showLeaveDropdown(studentName: String?) {
         val dialog = BottomSheetDialog(this)

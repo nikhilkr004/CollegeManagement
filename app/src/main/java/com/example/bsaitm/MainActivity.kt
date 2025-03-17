@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -20,15 +21,41 @@ import com.example.bsaitm.Activity.LeaveActivity
 import com.example.bsaitm.Activity.NoticeActivity
 import com.example.bsaitm.Activity.ProfileActivity
 import com.example.bsaitm.Activity.StudentActivitysClass
+import com.example.bsaitm.Activity.ViewSyllabusActivity
 import com.example.bsaitm.Adapter.ImageAdapter
 import com.example.bsaitm.Adapter.NoticeAdapter
 import com.example.bsaitm.Adapter.SubjectsAttendanceAdapter
+import com.example.bsaitm.Constant.diplomacivilsem1b1
+import com.example.bsaitm.Constant.diplomacivilsem2b1
+import com.example.bsaitm.Constant.diplomacivilsem3b1
+import com.example.bsaitm.Constant.diplomacivilsem4b1
+import com.example.bsaitm.Constant.diplomacivilsem5b1
+import com.example.bsaitm.Constant.diplomacivilsem6b1
 import com.example.bsaitm.Constant.diplomacomputersem1b1
 import com.example.bsaitm.Constant.diplomacomputersem2b1
 import com.example.bsaitm.Constant.diplomacomputersem3b1
 import com.example.bsaitm.Constant.diplomacomputersem4b1
 import com.example.bsaitm.Constant.diplomacomputersem5b1
 import com.example.bsaitm.Constant.diplomacomputersem6b1
+import com.example.bsaitm.Constant.diplomaelectricalsem1b1
+import com.example.bsaitm.Constant.diplomaelectricalsem2b1
+import com.example.bsaitm.Constant.diplomaelectricalsem3b1
+import com.example.bsaitm.Constant.diplomaelectricalsem4b1
+import com.example.bsaitm.Constant.diplomaelectricalsem5b1
+import com.example.bsaitm.Constant.diplomaelectricalsem6b1
+import com.example.bsaitm.Constant.diplomaelectronicsem1b1
+import com.example.bsaitm.Constant.diplomaelectronicsem2b1
+import com.example.bsaitm.Constant.diplomaelectronicsem3b1
+import com.example.bsaitm.Constant.diplomaelectronicsem4b1
+import com.example.bsaitm.Constant.diplomaelectronicsem5b1
+import com.example.bsaitm.Constant.diplomaelectronicsem6b1
+import com.example.bsaitm.Constant.diplomamechanicalsem1b1
+import com.example.bsaitm.Constant.diplomamechanicalsem2b1
+import com.example.bsaitm.Constant.diplomamechanicalsem3b1
+import com.example.bsaitm.Constant.diplomamechanicalsem4b1
+import com.example.bsaitm.Constant.diplomamechanicalsem5b1
+import com.example.bsaitm.Constant.diplomamechanicalsem6b1
+
 import com.example.bsaitm.DataClass.NoticeData
 import com.example.bsaitm.DataClass.StudentData
 import com.example.bsaitm.DataClass.SubjectAttendance
@@ -95,8 +122,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this,LeaveActivity::class.java))
         }
 
-
-
+        binding.viewSyllabus.setOnClickListener {
+            startActivity(Intent(this,ViewSyllabusActivity::class.java))
+        }
     }
 
 
@@ -168,6 +196,40 @@ class MainActivity : AppCompatActivity() {
             "diplomacomputersem4b1" -> diplomacomputersem4b1
             "diplomacomputersem5b1" -> diplomacomputersem5b1
             "diplomacomputersem6b1" -> diplomacomputersem6b1
+
+            ////civil
+            "diplomacivilsem1b1" -> diplomacivilsem1b1
+            "diplomacivilsem2b1" -> diplomacivilsem2b1
+            "diplomacivilsem3b1" -> diplomacivilsem3b1
+            "diplomacivilsem4b1" -> diplomacivilsem4b1
+            "diplomacivilsem5b1" -> diplomacivilsem5b1
+            "diplomacivilsem6b1" -> diplomacivilsem6b1
+
+
+            /// electrical
+            "diplomaelectricalsem1b1" -> diplomaelectricalsem1b1
+            "diplomaelectricalsem2b1" -> diplomaelectricalsem2b1
+            "diplomaelectricalsem3b1" -> diplomaelectricalsem3b1
+            "diplomaelectricalsem4b1" -> diplomaelectricalsem4b1
+            "diplomaelectricalsem5b1" -> diplomaelectricalsem5b1
+            "diplomaelectricalsem6b1" -> diplomaelectricalsem6b1
+
+            //eletronics
+            "diplomaelectronicsem1b1" -> diplomaelectronicsem1b1
+            "diplomaelectronicsem2b1" -> diplomaelectronicsem2b1
+            "diplomaelectronicsem3b1" -> diplomaelectronicsem3b1
+            "diplomaelectronicsem4b1" -> diplomaelectronicsem4b1
+            "diplomaelectronicsem5b1" -> diplomaelectronicsem5b1
+            "diplomaelectronicsem6b1" -> diplomaelectronicsem6b1
+
+            "diplomamechanicalsem1b1" -> diplomamechanicalsem1b1
+            "diplomamechanicalsem2b1" -> diplomamechanicalsem2b1
+            "diplomamechanicalsem3b1" -> diplomamechanicalsem3b1
+            "diplomamechanicalsem4b1" -> diplomamechanicalsem4b1
+            "diplomamechanicalsem5b1" -> diplomamechanicalsem5b1
+            "diplomamechanicalsem6b1" -> diplomamechanicalsem6b1
+
+
             else -> emptyArray()
         }
 
@@ -217,6 +279,9 @@ class MainActivity : AppCompatActivity() {
                 // ✅ Fix 5: Update RecyclerView After All Subjects Are Fetched
                 completedSubjects++
                 if (completedSubjects == totalSubjects) {
+                    binding.mainLayout.visibility=View.VISIBLE
+                    binding.mainShimmerLayout.visibility=View.GONE
+
                     adapters.notifyDataSetChanged()
                 }
 

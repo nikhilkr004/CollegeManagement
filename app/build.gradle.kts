@@ -37,6 +37,7 @@ android {
     buildFeatures{
         viewBinding=true
     }
+
 }
 
 dependencies {
@@ -73,5 +74,10 @@ dependencies {
     implementation ("com.airbnb.android:lottie:6.1.0")
 
     implementation ("com.github.AnyChart:AnyChart-Android:1.1.5")
+
+    // shimmer
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
+    implementation("com.github.TalbotGooday:AndroidPdfViewer:3.1.0-beta.3")
+
 }
 

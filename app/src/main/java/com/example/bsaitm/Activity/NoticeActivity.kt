@@ -63,16 +63,11 @@ class NoticeActivity : AppCompatActivity() {
                 noticeData.clear()
                 for (document in documents) {
                     val data = document.toObject(NoticeData::class.java)
-                    data?.let { noticeData.add(it) }
-                }
+                    data?.let { noticeData.add(it)
 
-//                if (noticeData.isEmpty()){
-//                    binding.noticeRecycler.visibility=View.GONE
-//                    binding.lottieAnimationView.visibility=View.VISIBLE
-//                }else{
-//                    binding.lottieAnimationView.visibility=View.GONE
-//                    binding.noticeRecycler.visibility=View.VISIBLE
-//                }
+                        checkEmptyStste()
+                    }
+                }
 
                 noticeAdapter.notifyDataSetChanged() // ✅ RecyclerView Update
             }.addOnFailureListener {
@@ -81,6 +76,17 @@ class NoticeActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Log.e("FirestoreError", "Exception: ${e.message}")
         }
+    }
+
+    private fun checkEmptyStste() {
+        if (noticeData.isEmpty()){
+            binding.noticeRecycler.visibility=View.GONE
+            binding.lottieAnimationView.visibility=View.VISIBLE
+        }else{
+            binding.lottieAnimationView.visibility=View.GONE
+            binding.noticeRecycler.visibility=View.VISIBLE
+        }
+
     }
 
 }
