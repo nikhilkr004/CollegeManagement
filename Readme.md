@@ -53,3 +53,22 @@ A mobile-first ERP solution for colleges with attendance tracking, timetable man
    ```bash
    git clone https://github.com/yourrepo/college-connect.git
    cd college-connect
+2. Install dependencies:
+    ```bash
+    npm install
+3. Firebase setup:
+
+Create firebase-config.js in root:
+```bash
+    export default {
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_APP.firebaseapp.com",
+  projectId: "YOUR_APP",
+  storageBucket: "YOUR_APP.appspot.com",
+  messagingSenderId: "SENDER_ID",
+  appId: "APP_ID"
+};
+
+4. Run app:
+```bash
+    expo start
