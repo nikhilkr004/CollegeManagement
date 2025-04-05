@@ -12,14 +12,11 @@
 ## ✨ Key Features
 
 ### 📊 Attendance System
-- Facial recognition-based attendance
+
 - Real-time updates on student presence
 - Faculty approval workflows for manual entries
 
-### 🕒 Smart Timetable
-- Dynamic daily/weekly class schedule views
-- Real-time class reminders
-- Automatic room change notifications
+
 
 ### 📚 Note Sharing Network
 - Upload and share notes (PDFs/images)
@@ -36,25 +33,20 @@
 ## 💻 Tech Stack
 
 **Frontend**:
-- React Native (Expo)
-- Redux Toolkit
-- NativeBase UI
+- XML
+- Kotlin
+
 
 **Backend**:
 - Firebase (Authentication, Firestore, Storage)
 - Firebase Cloud Functions
-- Redis (for caching and performance)
+
 
 ---
 
 ## ⚙ Installation
 
 ### Prerequisites
-- Node.js v18+
-- Expo CLI:  
-  ```bash
-  npm install -g expo-cli
-  ```
 - A Firebase project with Firestore & Auth enabled
 - Android/iOS simulator or a physical device
 
@@ -62,7 +54,7 @@
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourrepo/college-connect.git
+   git clone https://github.com/nikhilkr004/CollegeManagement
    cd college-connect
    ```
 
@@ -139,9 +131,3 @@ Feel free to fork the repository and submit a pull request. Open issues if you s
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
-
----
-
-## 📬 Contact
-
-For queries or collaboration opportunities, reach out via email: [your-email@example.com](mailto:your-email@example.com)
