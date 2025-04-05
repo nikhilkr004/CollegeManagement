@@ -18,6 +18,7 @@ class NotesAdapter(
         val inflater= LayoutInflater.from(parent.context)
         val binding= NotesItemBinding.inflate(inflater)
         return NoticeAdapter.ViewHolder(binding)
+        toString()
     }
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
