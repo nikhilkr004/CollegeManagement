@@ -20,7 +20,7 @@ class NoticeAdapter(val data:List<NoticeData>):RecyclerView.Adapter<NoticeAdapte
 
 
     class ViewHolder(val binding:ViewDeleteNoticeItemBinding):RecyclerView.ViewHolder(binding.root) {
-        fun bind(data: PdfDataClass) {
+        fun bind(data: NoticeData) {
             val db=FirebaseFirestore.getInstance()
             val context=binding.root.context
 
