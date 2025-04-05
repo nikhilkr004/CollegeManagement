@@ -59,6 +59,7 @@ import com.example.bsaitm.Constant.diplomamechanicalsem6b1
 import com.example.bsaitm.DataClass.NoticeData
 import com.example.bsaitm.DataClass.StudentData
 import com.example.bsaitm.DataClass.SubjectAttendance
+import com.example.bsaitm.NotessShare.ShareNotesActivity
 import com.example.bsaitm.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -124,6 +125,12 @@ class MainActivity : AppCompatActivity() {
 
         binding.viewSyllabus.setOnClickListener {
             startActivity(Intent(this,ViewSyllabusActivity::class.java))
+        }
+
+
+        //// to add pdf
+        binding.addPdfs.setOnClickListener {
+            startActivity(Intent(this@MainActivity, ShareNotesActivity::class.java))
         }
     }
 

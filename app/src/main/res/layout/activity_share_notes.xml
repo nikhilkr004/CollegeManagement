@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".NotessShare.ShareNotesActivity">
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="@dimen/_35sdp"
+        android:layout_height="@dimen/_35sdp"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/baseline_arrow_back_ios_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottieAnimationView"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageButton2"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/uploadnotes" />
+
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:fontFamily="@font/suez_one"
+        android:text=" “Your Notes Could Be Someone’s\nLifesaver!”"
+        android:textAlignment="center"
+        android:textSize="@dimen/_18sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lottieAnimationView" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView13">
+
+        <EditText
+            android:id="@+id/titleEditText"
+            android:padding="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:layout_width="match_parent"
+            android:background="@drawable/edit_text_back"
+            android:layout_height="wrap_content"
+            android:hint="Note Title" />
+
+        <EditText
+            android:id="@+id/subjectEditText"
+            android:layout_width="match_parent"
+            android:padding="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:background="@drawable/edit_text_back"
+            android:layout_height="wrap_content"
+            android:hint="Subject" />
+
+        <EditText
+            android:id="@+id/semesterEditText"
+            android:layout_width="match_parent"
+            android:background="@drawable/edit_text_back"
+            android:padding="@dimen/_10sdp"
+            android:layout_height="wrap_content"
+            android:hint="Semester" />
+
+        <TextView
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:id="@+id/selectFileBtn"
+            android:background="@drawable/uploadpdf_background"
+            android:padding="@dimen/_10sdp"
+            android:layout_width="match_parent"
+            android:textAlignment="center"
+            android:layout_height="wrap_content"
+            android:text="Select PDF" />
+
+        <TextView
+            android:id="@+id/selectedFileName"
+         android:layout_marginTop="@dimen/_5sdp"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No file selected" />
+
+        <TextView
+            android:id="@+id/uploadBtn"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:textColor="@color/white"
+            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:background="@drawable/main_button_back"
+            android:padding="@dimen/_10sdp"
+            android:layout_height="wrap_content"
+            android:text="Upload Note" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -50,8 +50,8 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
     implementation(libs.firebase.firestore)
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
+//    implementation(libs.androidx.navigation.fragment.ktx)
+//    implementation(libs.androidx.navigation.ui.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -65,10 +65,11 @@ dependencies {
     implementation ("com.robinhood.spark:spark:1.2.0")
     implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation ("com.google.firebase:firebase-storage:20.3.0")
-    implementation (libs.glide)
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
 
     /////time
-    implementation (libs.timeago)
+
+    implementation("com.github.marlonlom:timeago:4.1.0")
 
     //Lottie animation
     implementation ("com.airbnb.android:lottie:6.1.0")
@@ -78,6 +79,9 @@ dependencies {
     // shimmer
     implementation("com.facebook.shimmer:shimmer:0.5.0")
     implementation("com.github.TalbotGooday:AndroidPdfViewer:3.1.0-beta.3")
+
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    implementation ("androidx.navigation:navigation-ui-ktx:2.7.7")
 
 }
 

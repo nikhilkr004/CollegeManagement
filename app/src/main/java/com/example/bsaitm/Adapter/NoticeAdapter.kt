@@ -2,17 +2,15 @@ package com.example.bsaitm.Adapter
 
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.bsaitm.DataClass.NoticeData
+import com.example.bsaitm.NotessShare.PdfDataClass
 import com.example.bsaitm.R
-import com.example.bsaitm.databinding.LeaveStatusItemBinding
 import com.example.bsaitm.databinding.ViewDeleteNoticeItemBinding
 
-import com.github.marlonlom.utilities.timeago.TimeAgo
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
@@ -22,7 +20,7 @@ class NoticeAdapter(val data:List<NoticeData>):RecyclerView.Adapter<NoticeAdapte
 
 
     class ViewHolder(val binding:ViewDeleteNoticeItemBinding):RecyclerView.ViewHolder(binding.root) {
-        fun bind(data: NoticeData) {
+        fun bind(data: PdfDataClass) {
             val db=FirebaseFirestore.getInstance()
             val context=binding.root.context
 

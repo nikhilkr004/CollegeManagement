@@ -16,6 +16,12 @@
         android:theme="@style/Theme.BSAITM"
         tools:targetApi="31">
         <activity
+            android:name=".NotessShare.ViewPdfsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NotessShare.ShareNotesActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.PdfViewerActivity"
             android:exported="false" />
         <activity
